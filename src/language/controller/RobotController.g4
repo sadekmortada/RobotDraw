@@ -1,0 +1,26 @@
+grammar RobotController;
+program: statement+;
+statement: moveStatement | rotateStatement | loopStatement | logStatement | changeColorStatement | jumpStatement;
+// | rotateDegreesStatement | movePixelsStatement | clearStatement | undoStatement |
+loopStatement: LOOP (LPAREN INT RPAREN) LCURLY statement+ RCURLY;
+logStatement: LOG (LPAREN STRING RPAREN)? EOS;
+changeColorStatement: COLOR (LPAREN STRING RPAREN)? EOS;
+moveStatement: MOVE EOS;
+jumpStatement: JUMP EOS;
+rotateStatement: ROTATE EOS;
+MOVE: 'move';
+JUMP: 'jump';
+ROTATE: 'rotate';
+LOOP: 'loop';
+LOG: 'log';
+COLOR: 'color';
+LPAREN: '(';
+RPAREN: ')';
+LCURLY: '{';
+RCURLY: '}';
+INT: [0-9]+;
+STRING: '"' (~[\r\n])* '"';
+EOS: ';';
+WS: (' '| '\t' | '\n' | '\r') -> skip;
+COMMENT: '/*' .*? '*/' -> skip;
+LINE_COMMENT: '//' ~[\r\n]* -> skip;
