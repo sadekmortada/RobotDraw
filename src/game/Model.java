@@ -14,7 +14,16 @@ public class Model {
         current.y += 15*Math.sin(((float)angle/180)*Math.PI);
         validateMove(current);
     }
+    public void movePlayer(int distance) {
+        current.x += distance*Math.cos(Math.toRadians(angle));
+        current.y += distance*Math.sin(Math.toRadians(angle));
+        validateMove(current);
+    }
 
+    public void rotatePlayer(int degrees) {
+        angle += degrees;
+        angle %= 360;
+    }
     public void jumpPlayer() {
         current.x += 15*Math.cos(Math.toRadians(angle));
         current.y += 15*Math.sin(Math.toRadians(angle));
