@@ -37,12 +37,12 @@ class View extends JFrame {
             });
         }catch (ConcurrentModificationException e){}
         player.paint(graphics);
-        model.currentToPrevious();
     }
 
     void refresh() {
         repaint();
     }
+
     class Player extends JLabel{
         @Override
         protected void paintComponent(Graphics g) {

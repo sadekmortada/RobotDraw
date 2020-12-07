@@ -1,23 +1,36 @@
-/*move;
-rotate; rotate; rotate;
-move; move; move; move;
-rotate; rotate; rotate;
+/*circle(65);
+color("red");
+jump_p(80);
+circle(85);
+
+color("orange");
+jump_p(80);
+circle(105);
+
+color("green");
+jump_p(80);
+circle(125);
+
+color("blue");
+jump_p(80);
+circle(145);
+
+color("pink");
+jump_p(80);
+circle(165);
+
+log("finished");
+undo;undo;undo;undo;undo;undo;undo;undo;undo;undo;undo;undo;undo;undo;undo;undo;undo;undo;undo;
+clear;*/
+loop(8){
 move;
-rotate; rotate; rotate;
-move; move;
-rotate; rotate; rotate;
-move; move; move; move;
-rotate; rotate; rotate;
-move;*/
-
-//loop(6){color("blue"); move; rotate; move; rotate; rotate;}
-
-color("green"); move; move;
-rotate; color("red");
-move; move;
+color("red");
+move;
 rotate;
-move; color("black");
-move; jump;
-rotate; jump; move; move;
-
-log("finished!");
+move;
+color("blue");
+rotate_d(45);
+move;color("pink");
+jump;
+move;
+}

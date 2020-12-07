@@ -1,66 +1,102 @@
 package game;
 
-import jdk.internal.util.xml.impl.Input;
 import language.controller.MyRobotControllerVisitor;
 import language.controller.RobotControllerLexer;
 import language.controller.RobotControllerParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 
-import javax.swing.*;
 import java.io.*;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 public class GameController {
 
     private Model model;
     private View view;
-    private static Scanner scanner = new Scanner(System.in); // to take user command input
-    private static FileWriter writer; //to save the command input into the file
-    private static File file = new File("res\\user_input.robot"); // to read each time the user command and execute it
-    private static String input;
+    private static Scanner scanner=new Scanner(System.in);
     public static GameController gameController;
     private GameController() {
-        gameController=this;
         model = new Model();
         view = new View(model);
-//        try { // just to make sure there exists file with such name!
-//            file.createNewFile(); } catch (IOException e) { e.printStackTrace(); }
-//        parseInput();
-        parseControllerFile();
+        gameController=this;
+//        parseControllerFile(); //we commented this, its for reading from file
+        parseInputStatements(); //this is to read from command prompt
     }
 
     public void move() {
         model.movePlayer();
-        process();
+        view.refresh();
+        try { Thread.sleep(100); }
+        catch (InterruptedException ignored) {}
     }
     public void jump() {
         model.jumpPlayer();
-        process();
+        view.refresh();
+        try { Thread.sleep(100); }
+        catch (InterruptedException ignored) {}
     }
     public void rotate() {
         model.rotatePlayer();
-        process();
+        view.refresh();
+        try { Thread.sleep(100); }
+        catch (InterruptedException ignored) {}
     }
 
-    public void move(int distance) {
-        model.movePlayer(distance);
-        process();
+    public void clear() {
+        model.clearPlayer();
+        view.refresh();
+        try { Thread.sleep(100); }
+        catch (InterruptedException ignored) {}
+    }
+    public void undo() {
+        model.undo();
+        view.refresh();
+        try { Thread.sleep(100); }
+        catch (InterruptedException ignored) {}
+    }
+    public void move_p(int mp) {
+        model.movePixelsPlayer(mp);
+        view.refresh();
+        try { Thread.sleep(100); }
+        catch (InterruptedException ignored) {}
+    }
+    public void jump_p(int mp) {
+        model.jumpPixelsPlayer(mp);
+        view.refresh();
+        try { Thread.sleep(100); }
+        catch (InterruptedException ignored) {}
+    }
+    public void rotate_d(int rd) {
+        model.rotateDegreesPlayer(rd);
+        view.refresh();
+        try { Thread.sleep(100); }
+        catch (InterruptedException ignored) {}
     }
 
-    public void rotate(int degrees) {
-        model.rotatePlayer(degrees);
-        process();
+    public void square(int S) {
+        for(int i=0; i<=3; i++) {
+            model.movePixelsPlayer(S);
+            model.rotatePlayer();
+            view.refresh();
+            try { Thread.sleep(120); }
+            catch (InterruptedException ignored) {}
+        }
+    }
+    public void circle(int r) {
+        for(int i=0; i<45; i++) {
+            model.movePixelsPlayer((int)Math.round(Math.toRadians(8)*r));
+            model.rotateDegreesPlayer(8);
+
+            view.refresh();
+            try { Thread.sleep(30); }
+            catch (InterruptedException ignored) {}
+        }
     }
 
     public void changeColor(String color){
         model.changeColor(color);
-    }
-
-    public void process(){
-        view.refresh();
-        try { Thread.sleep(100); }
-        catch (InterruptedException ignored) {}
     }
 
     public void displayMessage(String message) {
@@ -71,7 +107,7 @@ public class GameController {
         new GameController();
     }
 
-    private void parseControllerFile() {//TODO edit
+    private void parseControllerFile() { //this reads from file
         try {
             InputStream fileStream= new FileInputStream("res\\sample.robot");
             ANTLRInputStream inputStream = new ANTLRInputStream(fileStream);
@@ -84,23 +120,22 @@ public class GameController {
         }
         catch (IOException ignored) { }
     }
-    public static void parseInput() {
-        try {
-            input = scanner.nextLine();
-            writer = new FileWriter(file);
-            writer.write(input);
-            writer.close();
-            InputStream fileStream= new FileInputStream(file);
-            ANTLRInputStream inputStream = new ANTLRInputStream(fileStream);
-            RobotControllerLexer lexer = new RobotControllerLexer(inputStream);
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            RobotControllerParser parser = new RobotControllerParser(tokens);
-            RobotControllerParser.ProgramContext tree = parser.program();
-            MyRobotControllerVisitor visitor = new MyRobotControllerVisitor(gameController);
+    private void parseInputStatements() { //this reads from command prompt
+        //Here we created the variables before the while loop for avoiding creation of many variables in each while loop cycle
+        ANTLRInputStream inputStream;
+        RobotControllerLexer lexer;
+        CommonTokenStream tokens;
+        RobotControllerParser parser;
+        RobotControllerParser.StatementContext tree;
+        MyRobotControllerVisitor visitor;
+        while(true) {
+            inputStream = new ANTLRInputStream(scanner.nextLine());
+            lexer = new RobotControllerLexer(inputStream);
+            tokens = new CommonTokenStream(lexer);
+            parser = new RobotControllerParser(tokens);
+            tree = parser.statement();
+            visitor = new MyRobotControllerVisitor(this);
             visitor.visit(tree);
         }
-        catch (Exception e) { }
-
     }
-
 }

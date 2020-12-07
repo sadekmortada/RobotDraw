@@ -6,11 +6,6 @@ public class Coordinates {
     public int x;
     public int y;
     public Color color;
-    public Coordinates(int x, int y) {
-        this.x = x;
-        this.y = y;
-        color = Color.BLACK;
-    }
     public Coordinates(int x, int y, Color color) {
         this.x = x;
         this.y = y;
@@ -25,8 +20,5 @@ public class Coordinates {
             return ((Coordinates) obj).x == x && ((Coordinates) obj).y == y;
 
         return super.equals(obj);
-    }
-    public static Coordinates clone(Coordinates c){
-        return new Coordinates(c.x,c.y,c.color);
     }
 }

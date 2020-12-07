@@ -1,94 +1,100 @@
 package game;
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 public class Model {
     private int screenX=800, screenY=600, playerSize=25;
-    private Coordinates current = new Coordinates(200, 200), previous=new Coordinates(200,200);
+    private Coordinates current = new Coordinates(200, 200,Color.BLACK), previous=new Coordinates(200,200, Color.BLACK);
     private int angle = 0;
-    private HashMap<Coordinates,Coordinates> lines = new HashMap<>();
+    private LinkedHashMap<Coordinates,Coordinates> lines = new LinkedHashMap<>();
 
     public void movePlayer() {
-        current.x += 15*Math.cos(((float)angle/180)*Math.PI);
-        current.y += 15*Math.sin(((float)angle/180)*Math.PI);
-        validateMove(current);
-    }
-    public void movePlayer(int distance) {
-        current.x += distance*Math.cos(Math.toRadians(angle));
-        current.y += distance*Math.sin(Math.toRadians(angle));
+        current.x += Math.round(15*Math.cos(Math.toRadians(angle)));
+        current.y += Math.round(15*Math.sin(Math.toRadians(angle)));
         validateMove(current);
     }
 
-    public void rotatePlayer(int degrees) {
-        angle += degrees;
-        angle %= 360;
-    }
     public void jumpPlayer() {
-        current.x += 15*Math.cos(Math.toRadians(angle));
-        current.y += 15*Math.sin(Math.toRadians(angle));
+        current.x += Math.round(15*Math.cos(Math.toRadians(angle)));
+        current.y += Math.round(15*Math.sin(Math.toRadians(angle)));
         validateJump(current);
     }
+
     public void rotatePlayer() {
         angle+=90;
         angle %= 360;
     }
 
+    public void clearPlayer() {
+        lines.clear();
+    }
+    public void undo(){
+        ArrayList<Coordinates> list = new ArrayList<>(lines.keySet());
+        lines.remove(list.get(list.size()-1));
+    }
+    public void movePixelsPlayer(int mp) {
+        current.x += Math.round(mp * Math.cos(Math.toRadians(angle)));
+        current.y += Math.round(mp * Math.sin(Math.toRadians(angle)));
+        validateMove(current);
+    }
+    public void jumpPixelsPlayer(int mp) {
+        current.x += Math.round(mp*Math.cos(Math.toRadians(angle)));
+        current.y += Math.round(mp*Math.sin(Math.toRadians(angle)));
+        validateJump(current);
+    }
+    public void rotateDegreesPlayer(int rd) {
+        angle+=rd;
+        angle %= 360;
+    }
 
     public void changeColor(String colorID) {
-        switch(colorID.split("\"")[1]){
-            case "gray":
-                current.color=Color.GRAY;
-                break;
-            case "red":
-            current.color=Color.RED;
-            break;
-            case "green":
-                current.color=Color.GREEN;
-                break;
-            case "blue":
-                current.color=Color.BLUE;
-                break;
-            case "yellow":
-                current.color=Color.YELLOW;
-                break;
-            case "cyan":
-                current.color=Color.CYAN;
-                break;
-            case"orange":
-                current.color=Color.ORANGE;
-                break;
-            case"magenta":
-                current.color=Color.MAGENTA;
-                break;
-            case"pink":
-                current.color=Color.PINK;
-                break;
-            default:
-                current.color=Color.BLACK;
-        }
-        lines.put(Coordinates.clone(previous),Coordinates.clone(current));
+        colorID = colorID.split("\"")[1];
+        if (colorID.equals("blue")) { current.color = Color.blue; return;}
+        if (colorID.equals("red")) { current.color = Color.red; return;}
+        if (colorID.equals("cyan")) { current.color = Color.cyan; return;}
+        if (colorID.equals("darkGray")) { current.color = Color.darkGray; return;}
+        if (colorID.equals("gray")) { current.color = Color.gray; return;}
+        if (colorID.equals("green")) { current.color = Color.green; return;}
+        if (colorID.equals("lightGray")) { current.color = Color.lightGray; return;}
+        if (colorID.equals("magenta")) { current.color = Color.magenta; return;}
+        if (colorID.equals("orange")) { current.color = Color.orange; return;}
+        if (colorID.equals("pink")) { current.color = Color.pink; return;}
+        if (colorID.equals("white")) { current.color = Color.white; return;}
+        if (colorID.equals("yellow")) { current.color = Color.yellow; return;}
+        if (colorID.equals("black")) { current.color = Color.black; return;}
+        System.out.println("Invalid color");
+        previous.color = current.color;
+        lines.put(new Coordinates(previous.x,previous.y,previous.color), new Coordinates(current.x,current.y,current.color));
     }
+
     private void validateMove(Coordinates current){
         if (current.x <=10 || current.x >= screenX-10 || current.y <= 20 || current.y >= screenY-10) {
-            System.out.println("Invalid move");
-            // we can log a message here
+            //System.out.println("Invalid move!");
+            GameController.gameController.displayMessage("Invalid move!");
             current.x = previous.x;
             current.y = previous.y;
             return;
         }
         if(!previous.equals(current)) {
-            lines.put(Coordinates.clone(previous),Coordinates.clone(current));
+            lines.put(new Coordinates(previous.x,previous.y,previous.color),new Coordinates(current.x,current.y,current.color));
+            previous.x=current.x;
+            previous.y=current.y;
+            previous.color=current.color;
         }
     }
 
     private void validateJump(Coordinates current){
         if (current.x <=10 || current.x >= screenX-10 || current.y <= 20 || current.y >= screenY-10) {
-            System.out.println("Invalid jump");
-            // we can log a message here
+            //System.out.println("Invalid jump!");
+            GameController.gameController.displayMessage("Invalid jump!");
             current.x = previous.x;
             current.y = previous.y;
             return;
+        }
+        if(!previous.equals(current)) {
+            previous.x=current.x;
+            previous.y=current.y;
+            previous.color=current.color;
         }
     }
 
@@ -101,10 +107,5 @@ public class Model {
     public int getScreenX() { return screenX; }
     public int getScreenY() { return screenY; }
 
-    public void currentToPrevious() {
-        previous.x=current.x;
-        previous.y=current.y;
-        previous.color=current.color;
-    }
 
 }

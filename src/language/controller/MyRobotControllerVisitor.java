@@ -42,4 +42,42 @@ public class MyRobotControllerVisitor extends RobotControllerBaseVisitor {
         controller.displayMessage(ctx.STRING().getText());
         return super.visitLogStatement(ctx);
     }
+    @Override
+    public Object visitClearStatement(RobotControllerParser.ClearStatementContext ctx){
+        controller.clear();
+        return super.visitClearStatement(ctx);
+    }
+
+    @Override
+    public Object visitMovePixelsStatement(RobotControllerParser.MovePixelsStatementContext ctx){
+        controller.move_p(Integer.parseInt(ctx.INT().getText()));
+        return super.visitMovePixelsStatement(ctx);
+    }
+    @Override
+    public Object visitJumpPixelsStatement(RobotControllerParser.JumpPixelsStatementContext ctx){
+        controller.jump_p(Integer.parseInt(ctx.INT().getText()));
+        return super.visitJumpPixelsStatement(ctx);
+    }
+
+    @Override
+    public Object visitUndoStatement(RobotControllerParser.UndoStatementContext ctx) {
+        controller.undo();
+        return super.visitUndoStatement(ctx);
+    }
+
+    @Override
+    public Object visitSquareStatement(RobotControllerParser.SquareStatementContext ctx){
+        controller.square(Integer.parseInt(ctx.INT().getText()));
+        return super.visitSquareStatement(ctx);
+    }
+    @Override
+    public Object visitRotateDegreesStatement(RobotControllerParser.RotateDegreesStatementContext ctx){
+        controller.rotate_d(Integer.parseInt(ctx.INT().getText()));
+        return super.visitRotateDegreesStatement(ctx);
+    }
+    @Override
+    public Object visitCircleStatement(RobotControllerParser.CircleStatementContext ctx){
+        controller.circle(Integer.parseInt(ctx.INT().getText()));
+        return super.visitCircleStatement(ctx);
+    }
 }
